@@ -14,7 +14,7 @@ let db
 /**
  * Inicia uma conexão com o bd de acordo com o adapter recebido.
  *
- * @param {Object} adapter
+ * @param {object} adapter
  */
 function initDB(adapter) {
   db = low(adapter)
@@ -33,30 +33,50 @@ const getDb = () => db
 /**
  * Salva um usuário no banco de dados.
  *
- * Cada usuário é salvo no formato:
- * 1. id
- * 2. username
- * 3. apto number
- *
  * @param {number} id
- * @param {string} name
+ * @param {string} username
+ * @param {string} firstname
  * @param {string} ap
  */
-function saveUser(id, name, ap) {
+function saveUser(id, username, firstname, ap) {
   db.get('users')
-    .push({ t_id: id, t_username: name, apto: ap })
+    .push({ t_id: id, t_username: username, t_firstname: firstname, apto: ap })
     .write()
-  // console.log(`DB: User ${id}:${name} save.`)
 }
 
 /**
- * Checa se o usuário existe.
+ * Define o numero do apartamento de um usuário
  *
  * @param {number} id
+ * @param {number} n
  */
-function userExist(id) {
-  // console.log(db.get('users').find({ t_id: id }).value())
+function setAppNum(id, n) {
+  db.get('users')
+    .find({ t_id: id })
+    .assign({ apto: n })
+    .write()
+}
+
+/**
+ * Retorna o objeto do usuário
+ *
+ * @param {number} id identificador do usuário
+ */
+function getUser(id) {
   return db.get('users').find({ t_id: id }).value()
+}
+
+/**
+ * Atualiza propriedades de um usuário
+ *
+ * @param {number} id
+ * @param {object} prop
+ */
+function updateProp(id, prop) {
+  db.get('users')
+    .find({ t_id: id })
+    .assign(prop)
+    .write()
 }
 
 /**
@@ -81,7 +101,8 @@ module.exports = {
   initDB,
   getDb,
   saveUser,
-  userExist,
+  getUser,
+  updateProp,
   createRelation,
   checkRelation,
 }

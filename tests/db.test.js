@@ -7,7 +7,7 @@ db.initDB(new Memory())
 
 describe('saveUser function', () => {
   it('Deve adicionar um usuário', () => {
-    db.saveUser(123, 'matho', '')
+    db.saveUser(123, 'matho', 'Matheus', 444)
 
     expect(
       db.getDb().get('users')
@@ -25,4 +25,14 @@ describe('userExist function', () => {
   it('Deve retornar undefined se não existir', () =>
     expect(db.userExist(222)).to.be.undefined
   )
+})
+
+describe('updateProp function', () => {
+  db.saveUser(234, 'bin', 'Bin', null) // sem apartamento
+
+  it('deve fazer o update do apto null', () => {
+    db.updateProp(234, { apto: 333 })
+
+    expect(db.getUser(234).apto).to.be.not.null
+  })
 })
