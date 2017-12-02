@@ -99,8 +99,7 @@ function createRelation(sender, key) {
  */
 function checkRelation(user, key) {
   let relation = db.get('in_progress_relations').find({ sender_id: user, key: key }).value()
-  console.log(user, key)
-  console.log(relation)
+
   if (relation) {
     relation.time = new Date()
     db.get('relations').push(relation).write()
