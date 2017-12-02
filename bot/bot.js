@@ -44,6 +44,13 @@ bot.hears(/[0-9]{3}/, (ctx) => {
 
 bot.hears('ola', ctx => ctx.reply('Olá!'))
 
+bot.command('gen', (ctx) => {
+  const n = Math.floor(Math.random() * 9000) + 1000
+  db.createRelation(ctx.from.id, n)
+
+  ctx.reply(`Segue o código gerado: ${n}`)
+})
+
 bot.catch(err => console.error('Erro: ', err))
 
 bot.startPolling()

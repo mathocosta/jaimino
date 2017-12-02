@@ -3,7 +3,7 @@
  * do programa. Cada função tem sua explicação de como funciona.
  * Modelo do Banco de Dados
  *
- * - Salvar entradas(quem pediu, quem usou, hrs, código)
+ * - Salvar entradas(quem pediu, hrs, código)
  * - Dados de Usuarios(telegram_id, nome, apartamento)
  */
 const path = require('path')
@@ -83,9 +83,12 @@ function updateProp(id, prop) {
  * Cria uma relação no bd e coloca no in-progress.
  *
  * @param {number} sender id do enviador do código
- * @param {number} receiver id do recebedor do código
+ * @param {number} key código
  */
-function createRelation(sender, receiver) {
+function createRelation(sender, key) {
+  db.get('in_progress_relations')
+    .push({ sender_id: sender, key: key, time: '' })
+    .write()
 }
 
 /**
@@ -95,6 +98,14 @@ function createRelation(sender, receiver) {
  * @param {number} key código
  */
 function checkRelation(user, key) {
+  let relation = db.get('in_progress_relations').find({ sender_id: user, key: key }).value()
+  console.log(user, key)
+  console.log(relation)
+  if (relation) {
+    relation.time = new Date()
+    db.get('relations').push(relation).write()
+    db.get('in_progress_relations').remove({ sender_id: user, key: key }).write()
+  }
 }
 
 module.exports = {
