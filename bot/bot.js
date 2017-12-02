@@ -1,4 +1,3 @@
-require('dotenv').config() // load the env variables
 const path = require('path')
 const Telegraf = require('telegraf')
 const FileSync = require('lowdb/adapters/FileSync')
