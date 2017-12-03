@@ -45,19 +45,6 @@ function saveUser(id, username, firstname, ap) {
 }
 
 /**
- * Define o numero do apartamento de um usuário
- *
- * @param {number} id
- * @param {number} n
- */
-function setAppNum(id, n) {
-  db.get('users')
-    .find({ t_id: id })
-    .assign({ apto: n })
-    .write()
-}
-
-/**
  * Retorna o objeto do usuário
  *
  * @param {number} id identificador do usuário
