@@ -8,7 +8,7 @@ db.initDB(new FileSync(path.join(__dirname, '..', 'db/db.json')))
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 bot.start((ctx) => {
-  console.log('SERVER: started with ', ctx.from.id)
+  console.log('SERVER: started with ', ctx.chat.id)
 
   ctx.reply('Olá, eu sou Jaimino.')
   ctx.reply(
@@ -53,3 +53,10 @@ bot.command('gen', (ctx) => {
 bot.catch(err => console.error('Erro: ', err))
 
 bot.startPolling()
+
+// Para receber as mensagens do arduino
+process.on('message', (msg) => {
+  let data = msg.split(":")
+  bot.telegram.sendMessage(Number(data[0]), data[1])
+  console.log(`> ${__filename} Enviando: ${data[1]} ao ${data[0]}`)
+})

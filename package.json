@@ -4,12 +4,14 @@
   "main": "index.js",
   "dependencies": {
     "lowdb": "^1.0.0",
+    "serialport": "^6.0.4",
     "telegraf": "^3.16.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "dotenv": "^4.0.0",
-    "mocha": "^4.0.1"
+    "mocha": "^4.0.1",
+    "virtual-serialport": "^4.0.1"
   },
   "scripts": {
     "test": "mocha ./tests",
@@ -20,6 +22,10 @@
     "bot",
     "arduino"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathocosta/jaimino"
+  },
   "author": "Matheus Oliveira Costa <matheusoliveiracos@gmail.com>",
   "license": "MIT"
 }
