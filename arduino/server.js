@@ -23,9 +23,19 @@ port.on('data', data => {
   let data_slices = data.split(':')
 
   switch (data_slices[0]) {
+    // Solicitando entrada.
     case "0":
       process.send(`${data_slices[1]}:${data_slices[2]}`)
       break
+
+    // Digitando o código.
+    // TODO: Colocar feedbacks para o Arduino
+    case "1":
+      db.checkRelation(data_slices[1], Number(data_slices[2]))
+        .then((id, key) => {
+          process.send(`${id}:Visitante Subindo, código usado ${data_slices[2]}`)
+        })
+        .catch((err) => console.error(err))
   }
   console.log(`> ${__filename} From Arduino: ${data}`)
 })
