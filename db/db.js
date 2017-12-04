@@ -68,30 +68,44 @@ function updateProp(id, prop) {
 
 /**
  * Cria uma relação no bd e coloca no in-progress.
+ * 
+ * A relação é criada com o número do apartamento de destino
+ * do visitante e o código gerado.
  *
  * @param {number} sender id do enviador do código
  * @param {number} key código
  */
 function createRelation(sender, key) {
+  const user = getUser(sender)
+
   db.get('in_progress_relations')
-    .push({ sender_id: sender, key: key, time: '' })
+    .push({ sender_id: sender, apto_dest: user.apto, key: key, time: '' })
     .write()
 }
 
 /**
  *  Checa se o código é válido, se sim, passa para os finalizados.
+ *  Função chamada somente pelo Arduino.
  *
- * @param {number} user id do que está usando o código
+ * @param {number} apto apartamento de destino
  * @param {number} key código
  */
-function checkRelation(user, key) {
-  let relation = db.get('in_progress_relations').find({ sender_id: user, key: key }).value()
+// FIXME: Colocar para retornar uma promise
+function checkRelation(apto, key) {
+  let relation = db.get('in_progress_relations').find({ apto_dest: apto, key: key }).value()
 
-  if (relation) {
-    relation.time = new Date()
-    db.get('relations').push(relation).write()
-    db.get('in_progress_relations').remove({ sender_id: user, key: key }).write()
-  }
+  console.log(relation)
+  return new Promise((resolve, reject) => {
+    if (relation) {
+      relation.time = new Date()
+      db.get('relations').push(relation).write()
+      db.get('in_progress_relations').remove({ apto_dest: apto, key: key }).write()
+      
+      resolve(relation.sender_id)
+    } else {
+      reject(new Error("Erro na autenticação"))
+    }
+  })
 }
 
 module.exports = {

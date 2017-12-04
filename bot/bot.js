@@ -58,5 +58,5 @@ bot.startPolling()
 process.on('message', (msg) => {
   let data = msg.split(":")
   bot.telegram.sendMessage(Number(data[0]), data[1])
-  console.log(`> ${__filename} Enviando: ${data[1]} ao ${data[0]}`)
+  console.log(`> ${__filename} Enviando: '${data[1]}' ao ${data[0]}`)
 })
