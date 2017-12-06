@@ -45,9 +45,11 @@ bot.hears('ola', ctx => ctx.reply('Olá!'))
 
 bot.command('gen', (ctx) => {
   const n = Math.floor(Math.random() * 9000) + 1000
-  db.createRelation(ctx.from.id, n)
+  const apto = db.getUser(ctx.from.id).apto
 
-  ctx.reply(`Segue o código gerado: ${n}`)
+  db.createRelation(ctx.from.id, `${apto}${n}`)
+
+  ctx.reply(`Segue o código gerado: ${apto}${n}`)
 })
 
 bot.catch(err => console.error('Erro: ', err))
