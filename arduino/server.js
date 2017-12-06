@@ -21,21 +21,30 @@ port.on('open', (err) => {
 // no primeiro 'pedaço', que é o identificador do comando. Depois passa os dados para o index.
 port.on('data', data => {
   let data_slices = data.split(':')
-
+  
+  // TODO: Colocar feedbacks para o Arduino
   switch (data_slices[0]) {
-    // Solicitando entrada.
+    // Entrada de um morador.
     case "0":
-      process.send(`${data_slices[1]}:${data_slices[2]}`)
+      db.checkRFID(data_slices[1])
+        .then((user) => {
+          process.send(`${user.t_id}: Bem Vindo ${user.t_firstname}!`)
+        })
+        .catch((err) => console.error(err))
       break
 
-    // Digitando o código.
-    // TODO: Colocar feedbacks para o Arduino
+    // Digitando um código pre-definido.  
     case "1":
       db.checkRelation(data_slices[1], Number(data_slices[2]))
-        .then((id, key) => {
+        .then((id) => {
           process.send(`${id}:Visitante Subindo, código usado ${data_slices[2]}`)
         })
         .catch((err) => console.error(err))
+      break
+
+    // Solicitando acesso.
+    case "2":
+      break
   }
   console.log(`> ${__filename} From Arduino: ${data}`)
 })

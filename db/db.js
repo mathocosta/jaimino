@@ -35,12 +35,13 @@ const getDb = () => db
  *
  * @param {number} id
  * @param {string} username
+ * @param {string} rfid 
  * @param {string} firstname
  * @param {string} ap
  */
-function saveUser(id, username, firstname, ap) {
+function saveUser(id, username, firstname, rfid, ap) {
   db.get('users')
-    .push({ t_id: id, t_username: username, t_firstname: firstname, apto: ap })
+    .push({ t_id: id, t_username: username, t_firstname: firstname, rf_id: rfid, apto: ap })
     .write()
 }
 
@@ -48,6 +49,8 @@ function saveUser(id, username, firstname, ap) {
  * Retorna o objeto do usuário
  *
  * @param {number} id identificador do usuário
+ *
+ * @return {object} 
  */
 function getUser(id) {
   return db.get('users').find({ t_id: id }).value()
@@ -64,6 +67,25 @@ function updateProp(id, prop) {
     .find({ t_id: id })
     .assign(prop)
     .write()
+}
+
+/**
+ * Verifica se o código é válido com um usuário.
+ *
+ * @param {string} rfid
+ *
+ * @param {Promise} 
+ */
+function checkRFID(rfid) {
+  const user = db.get('users').find({ rf_id: rfid}).value()
+
+  return new Promise((resolve, reject) => {
+    if (user) {
+      resolve(user)
+    } else {
+      reject(new Error("Código inexistente"))
+    }
+  })
 }
 
 /**
@@ -89,12 +111,12 @@ function createRelation(sender, key) {
  *
  * @param {number} apto apartamento de destino
  * @param {number} key código
+ *
+ * @return {Promise}
  */
-// FIXME: Colocar para retornar uma promise
 function checkRelation(apto, key) {
   let relation = db.get('in_progress_relations').find({ apto_dest: apto, key: key }).value()
 
-  console.log(relation)
   return new Promise((resolve, reject) => {
     if (relation) {
       relation.time = new Date()
@@ -114,6 +136,7 @@ module.exports = {
   saveUser,
   getUser,
   updateProp,
+  checkRFID,
   createRelation,
   checkRelation,
 }
