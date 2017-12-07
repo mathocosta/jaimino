@@ -45,9 +45,9 @@ function onData(data) {
 
     // Digitando um código pre-definido.  
     case "1":
-      db.checkRelation(data_slices[1], Number(data_slices[2]))
+      db.checkRelation(data_slices[1])
         .then((id) => {
-          process.send(`${id}:Visitante Subindo, código usado ${data_slices[2]}`)
+          process.send(`${id}:Visitante Subindo, código usado ${data_slices[1]}`)
         })
         .catch((err) => console.error(err))
       break

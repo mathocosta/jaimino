@@ -101,7 +101,7 @@ function createRelation(sender, key) {
   const user = getUser(sender)
 
   db.get('in_progress_relations')
-    .push({ sender_id: sender, apto_dest: user.apto, key: key, time: '' })
+    .push({ sender_id: sender, apto_dest: user.apto, key: key, opening: new Date(), closing: '' })
     .write()
 }
 
@@ -109,19 +109,18 @@ function createRelation(sender, key) {
  *  Checa se o código é válido, se sim, passa para os finalizados.
  *  Função chamada somente pelo Arduino.
  *
- * @param {number} apto apartamento de destino
  * @param {number} key código
  *
  * @return {Promise}
  */
-function checkRelation(apto, key) {
-  let relation = db.get('in_progress_relations').find({ apto_dest: apto, key: key }).value()
+function checkRelation(key) {
+  let relation = db.get('in_progress_relations').find({ key: key }).value()
 
   return new Promise((resolve, reject) => {
     if (relation) {
-      relation.time = new Date()
+      relation.closing = new Date()
       db.get('relations').push(relation).write()
-      db.get('in_progress_relations').remove({ apto_dest: apto, key: key }).write()
+      db.get('in_progress_relations').remove({ key: key }).write()
       
       resolve(relation.sender_id)
     } else {
