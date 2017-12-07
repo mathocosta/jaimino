@@ -5,13 +5,13 @@
   "dependencies": {
     "lowdb": "^1.0.0",
     "serialport": "^6.0.4",
-    "telegraf": "^3.16.0"
+    "telegraf": "^3.17.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "dotenv": "^4.0.0",
     "mocha": "^4.0.1",
-    "virtual-serialport": "^4.0.1"
+    "virtual-serialport": "git+https://github.com/reyiyo/virtual-serialport.git"
   },
   "scripts": {
     "test": "mocha ./tests",
