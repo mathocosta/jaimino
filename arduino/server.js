@@ -12,7 +12,7 @@ if (process.env.NODE_ENV == 'dev') { // Para testes sem o Arduino
 }
 
 const parser = new Readline({ delimiter: '\r\n' })
-const port = new Serialport("COM3", { baudRate: 9600 })
+const port = new Serialport(process.env.PORT, { baudRate: 9600 })
 
 port.pipe(parser)
 
@@ -22,13 +22,14 @@ port.on('open', (err) => {
   port.write("BLOOP") // manda para o Arduino
 })
 
+if (process.env.NODE_ENV == 'dev') {
+  port.on('data', onData) // Para testar sem Arduino
+} else {
+  parser.on('data', onData)
+}
+
 // Quando qualquer dado vem do Arduino é feito o comando baseando-se primeiramente
 // no primeiro 'pedaço', que é o identificador do comando. Depois passa os dados para o index.
-
-port.on('data', onData) // Para testar sem Arduino
-
-//parser.on('data', onData)
-
 function onData(data) {
   let data_slices = data.split(':')
 
