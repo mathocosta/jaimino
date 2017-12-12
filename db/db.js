@@ -6,13 +6,16 @@
  * - Salvar entradas(quem pediu, hrs, código)
  * - Dados de Usuarios(telegram_id, nome, apartamento)
  */
+const fs = require('fs')
 const path = require('path')
 const low = require('lowdb')
 
+let rfid_reg
 let db
 
 /**
  * Inicia uma conexão com o bd de acordo com o adapter recebido.
+ * E lê o arquivo do registro json dos códigos.
  *
  * @param {object} adapter
  */
@@ -25,6 +28,8 @@ function initDB(adapter) {
     in_progress_relations: [],
     relations: []
   }).write()
+
+  rfid_reg = JSON.parse(fs.readFileSync(path.join(__dirname, '/rfid.json'))).register
 }
 
 // just for tests
@@ -35,13 +40,12 @@ const getDb = () => db
  *
  * @param {number} id
  * @param {string} username
- * @param {string} rfid 
  * @param {string} firstname
  * @param {string} ap
  */
-function saveUser(id, username, firstname, rfid, ap) {
+function saveUser(id, username, firstname, ap) {
   db.get('users')
-    .push({ t_id: id, t_username: username, t_firstname: firstname, rf_id: rfid, apto: ap })
+    .push({ t_id: id, t_username: username, t_firstname: firstname, apto: ap })
     .write()
 }
 
@@ -70,14 +74,15 @@ function updateProp(id, prop) {
 }
 
 /**
- * Verifica se o código é válido com um usuário.
+ * Verifica se o código é válido com algum usuário.
  *
  * @param {string} rfid
  *
  * @param {Promise} 
  */
 function checkRFID(rfid) {
-  const user = db.get('users').find({ rf_id: rfid}).value()
+  const rfid_obj = rfid_reg.find(el => el.rfid == rfid)
+  const user = db.get('users').find({ apto: rfid_obj.apto }).value()
 
   return new Promise((resolve, reject) => {
     if (user) {

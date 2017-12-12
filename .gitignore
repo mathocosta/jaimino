@@ -50,4 +50,5 @@ typings/
 
 .env
 
-db/*.json
+# Ignore only the auto-generated file.
+db/db.json

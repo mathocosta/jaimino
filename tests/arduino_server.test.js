@@ -5,6 +5,6 @@ const port = require('../arduino/server')
 
 if (process.env.NODE_ENV == 'dev') {
   port.on('dataToDevice', (data) => {   // caso um dado for para o device
-    port.writeToComputer("1:2343929")  // apenas para testes
+    port.writeToComputer("0:12345")  // apenas para testes
   })
 }

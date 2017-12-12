@@ -20,7 +20,7 @@ bot.start((ctx) => {
 bot.hears(/[0-9]{5}/, (ctx) => {
   if (!db.getUser(ctx.from.id)) {
     ctx.reply('Codigo CORRETO')
-    db.saveUser(ctx.from.id, ctx.from.username, ctx.from.first_name, null, null)
+    db.saveUser(ctx.from.id, ctx.from.username, ctx.from.first_name, null)
     ctx.reply('Por favor digite agora seu apartamento.')
   }
 })
