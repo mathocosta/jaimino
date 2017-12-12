@@ -8,20 +8,28 @@ db.initDB(new FileSync(path.join(__dirname, '..', 'db/db.json')))
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 bot.start((ctx) => {
-  console.log('SERVER: started with ', ctx.chat.id)
+  console.log('BOT SERVER: started with ', ctx.chat.id)
+  const user = db.getUser(ctx.from.id)
 
-  ctx.reply('Olá, eu sou Jaimino.')
-  ctx.reply(
-    `Preciso que digite o código de segurança para liberar o sistema, por favor digite o código com 5 dígitos.`
-  )
+  if (!user) {
+    ctx.reply('Olá, eu sou Jaimino.')
+    ctx.reply(
+      `Preciso que digite o código de segurança para liberar o sistema, por favor digite o código com 5 dígitos.`
+    )
+  } else {
+    ctx.reply(`Tudo bem ${user.t_firstname}?`)
+  }
 })
 
 // Código de senha
 bot.hears(/[0-9]{5}/, (ctx) => {
   if (!db.getUser(ctx.from.id)) {
-    ctx.reply('Codigo CORRETO')
-    db.saveUser(ctx.from.id, ctx.from.username, ctx.from.first_name, null)
-    ctx.reply('Por favor digite agora seu apartamento.')
+    if (db.checkOrigin(ctx.message.text)) {
+      db.saveUser(ctx.from.id, ctx.from.username, ctx.from.first_name, null)
+      ctx.reply('Codigo CORRETO. Por favor digite agora seu apartamento.')
+    } else {
+      ctx.reply('Código incorreto.')
+    }
   }
 })
 

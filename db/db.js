@@ -22,18 +22,28 @@ let db
 function initDB(adapter) {
   db = low(adapter)
 
+  const rfid_file = JSON.parse(fs.readFileSync(path.join(__dirname, '/rfid.json')))
+  rfid_reg = rfid_file.register
+
   db.defaults({
-    origin_id: 1234,
+    origin_id: rfid_file.origin_id,
     users: [],
     in_progress_relations: [],
     relations: []
   }).write()
-
-  rfid_reg = JSON.parse(fs.readFileSync(path.join(__dirname, '/rfid.json'))).register
 }
 
 // just for tests
 const getDb = () => db
+
+/**
+ * Checa se o código bate com o do arquivo.
+ *
+ * @param {string} n
+ */
+function checkOrigin(n) {
+  return db.get('origin_id').value() == n
+}
 
 /**
  * Salva um usuário no banco de dados.
@@ -137,6 +147,7 @@ function checkRelation(key) {
 module.exports = {
   initDB,
   getDb,
+  checkOrigin,
   saveUser,
   getUser,
   updateProp,
