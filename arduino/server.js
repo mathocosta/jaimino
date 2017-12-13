@@ -2,6 +2,8 @@ const path = require('path')
 let Serialport = require('serialport')
 const Readline = Serialport.parsers.Readline
 
+const NodeWebcam = require('node-webcam')
+
 const FileSync = require('lowdb/adapters/FileSync')
 const db = require('../db/db')
 
@@ -13,6 +15,18 @@ if (process.env.NODE_ENV == 'dev') { // Para testes sem o Arduino
 
 const parser = new Readline({ delimiter: '\r\n' })
 const port = new Serialport(process.env.PORT, { baudRate: 9600 })
+
+const webcam_opts = {
+  quality: 100,
+  delay: 0,
+  saveShots: true,
+
+  // [jpeg, png] support varies
+  output: "png",
+  device: false,
+  callbackReturn: "location",
+  verbose: true
+}
 
 port.pipe(parser)
 
@@ -33,7 +47,6 @@ if (process.env.NODE_ENV == 'dev') {
 function onData(data) {
   let data_slices = data.split(':')
 
-  // TODO: Colocar feedbacks para o Arduino
   switch (data_slices[0]) {
     // Entrada de um morador.
     case "0":
@@ -55,10 +68,21 @@ function onData(data) {
 
     // Solicitando acesso.
     case "2":
+      const img_path = path.join(__dirname, '..', `/db/imgs/${(new Date()).toDateString().replace(/\s/g, '')}.png`)
+      NodeWebcam.capture(img_path, webcam_opts, (err, data) => {
+        if (err) console.log(err)
+        console.log(data)
+        process.send(`2:${data_slices[1]}:${img_path}`)
+      })
       break
   }
   console.log(`> ${__filename} From Arduino: ${data}`)
 }
+
+process.on('massage', (msg) => {
+  // Enviar para o Arduino
+  console.log("From bot to Arduino " + msg)
+})
 
 // NOTE: Remover quando não precisar mais.
 module.exports = port

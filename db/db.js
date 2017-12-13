@@ -71,6 +71,17 @@ function getUser(id) {
 }
 
 /**
+ * Retorna o objeto do usuário baseado no numero do apto.
+ *
+ * @param {string}
+ *
+ * @return {object}
+ */
+function getUserByApto(num) {
+  return db.get('users').find({ apto: num }).value()
+}
+
+/**
  * Atualiza propriedades de um usuário
  *
  * @param {number} id
@@ -91,14 +102,18 @@ function updateProp(id, prop) {
  * @param {Promise} 
  */
 function checkRFID(rfid) {
-  const rfid_obj = rfid_reg.find(el => el.rfid == rfid)
-  const user = db.get('users').find({ apto: rfid_obj.apto }).value()
-
   return new Promise((resolve, reject) => {
-    if (user) {
-      resolve(user)
+    const rfid_obj = rfid_reg.find(el => el.rfid == rfid)
+    if (!rfid_obj) {
+      reject(new Error("Código RFID inexistente"))
     } else {
-      reject(new Error("Código inexistente"))
+      const user = db.get('users').find({ apto: rfid_obj.apto }).value()
+
+      if (user) {
+        resolve(user)
+      } else {
+        reject(new Error("Nenhum usuário com o código"))
+      }
     }
   })
 }
@@ -150,6 +165,7 @@ module.exports = {
   checkOrigin,
   saveUser,
   getUser,
+  getUserByApto,
   updateProp,
   checkRFID,
   createRelation,

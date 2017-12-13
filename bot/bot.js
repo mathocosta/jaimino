@@ -1,5 +1,7 @@
 const path = require('path')
 const Telegraf = require('telegraf')
+const Extra = require('telegraf/extra')
+const Markup = require('telegraf/markup')
 const FileSync = require('lowdb/adapters/FileSync')
 const db = require('../db/db')
 
@@ -60,13 +62,41 @@ bot.command('gen', (ctx) => {
   ctx.reply(`Segue o código gerado: ${apto}${n}`)
 })
 
+bot.command('/test', (ctx) => {
+ })
+
 bot.catch(err => console.error('Erro: ', err))
 
 bot.startPolling()
 
+function requestAccess(chat_id, src) {
+  bot.telegram.sendPhoto(chat_id, { source: src })
+  bot.telegram.sendMessage(chat_id, "Pessoa solicitando a entrada. Permitir?", Markup.inlineKeyboard([
+      Markup.callbackButton('Sim', 'P_Sim'),
+      Markup.callbackButton('Não', 'P_Não')
+    ]).extra()
+  )
+}
+
+bot.action('P_Sim', (ctx) => {
+  ctx.reply('👍')
+  process.send('2:1')
+})
+
+bot.action('P_Não', (ctx) => {
+  ctx.reply('👍, Não Abrir')
+  process.send('2:0')
+})
+
 // Para receber as mensagens do arduino
 process.on('message', (msg) => {
   let data = msg.split(":")
-  bot.telegram.sendMessage(Number(data[0]), data[1])
-  console.log(`> ${__filename} Enviando: '${data[1]}' ao ${data[0]}`)
+
+  if (data[0] == "2") { // caso seja para solicitar acesso
+    const user = db.getUserByApto(data[1])
+    requestAccess(user.t_id, `${data[2]}:${data[3]}`)
+  } else {
+    bot.telegram.sendMessage(Number(data[0]), data[1])
+    console.log(`> ${__filename} Enviando: '${data[1]}' ao ${data[0]}`)
+  }
 })

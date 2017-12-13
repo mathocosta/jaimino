@@ -1,6 +1,6 @@
 {
   "origin_id": 12345,
   "register": [
-    { "apto": "303", "rfid": 12345 }
+    { "apto": "303", "rfid": "12345" }
   ]
 }
