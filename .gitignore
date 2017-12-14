@@ -52,3 +52,4 @@ typings/
 
 # Ignore only the auto-generated file.
 db/db.json
+db/imgs/*
